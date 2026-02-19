@@ -1,0 +1,1084 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎮 레벨업 인생 게임 - 생일 축하!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background: linear-gradient(to bottom, #ffe4f0 0%, #ffd4e8 30%, #ffe9c5 70%, #fff5e1 100%);
+            color: #ff1493;
+            overflow-x: hidden;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="8" fill="%23ffe4f0" stroke="%23ff69b4" stroke-width="2"/></svg>'), auto;
+            image-rendering: pixelated;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: crisp-edges;
+        }
+
+        .game-container {
+            max-width: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* HUD - Top Bar */
+        .hud-top {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to bottom, #ff85c1 0%, #ff69b4 100%);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 6px solid #fff;
+            border-bottom-left-radius: 20px;
+            border-bottom-right-radius: 20px;
+            z-index: 1000;
+            box-shadow: 0 4px 0 #ff1493, 0 8px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .hud-top::before {
+            content: '💕';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            opacity: 0.2;
+        }
+
+        .hud-left {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .hearts {
+            display: flex;
+            gap: 5px;
+        }
+
+        .heart {
+            font-size: 20px;
+            animation: heartBeat 1.5s infinite;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            10% { transform: scale(1.1); }
+            20% { transform: scale(1); }
+        }
+
+        .coins {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff;
+            padding: 10px 18px;
+            border: 3px solid #ffd700;
+            border-radius: 30px;
+            box-shadow: 0 4px 0 #ffb700, inset 0 2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .coin-icon {
+            font-size: 20px;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .coin-count {
+            font-size: 12px;
+            color: #ff8c00;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .hud-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .level-display {
+            background: #fff;
+            padding: 10px 18px;
+            border: 3px solid #ff69b4;
+            border-radius: 30px;
+            font-size: 11px;
+            color: #ff1493;
+            box-shadow: 0 4px 0 #ff85c1, inset 0 2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .achievement-display {
+            background: #fff;
+            padding: 10px 18px;
+            border: 3px solid #ff69b4;
+            border-radius: 30px;
+            font-size: 11px;
+            color: #ff1493;
+            box-shadow: 0 4px 0 #ff85c1, inset 0 2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        /* Game World */
+        .game-world {
+            margin-top: 80px;
+            min-height: calc(100vh - 80px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Sky with clouds */
+        .sky-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(to bottom, #ffe4f0 0%, #ffd4e8 50%, #ffe9c5 100%);
+            z-index: 1;
+        }
+
+        .sky-background::before {
+            content: '💕 💕 💕 💕 💕 💕 💕 💕 💕 💕';
+            position: absolute;
+            top: 20%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 20px;
+            opacity: 0.15;
+            animation: heartFloat 15s linear infinite;
+        }
+
+        @keyframes heartFloat {
+            from { transform: translateX(-100px); }
+            to { transform: translateX(100px); }
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50px;
+            border: 3px solid rgba(255, 192, 229, 0.3);
+            box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            animation: cloudFloat 25s linear infinite;
+        }
+
+        @keyframes cloudFloat {
+            from { transform: translateX(-150px); }
+            to { transform: translateX(calc(100vw + 150px)); }
+        }
+
+        /* Level Stage */
+        .level-stage {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .game-scene {
+            background: linear-gradient(to bottom, transparent 0%, transparent 40%, #ffe9c5 40%, #ffd89d 50%, #ffcc80 100%);
+            min-height: 400px;
+            position: relative;
+            border: 6px solid #fff;
+            border-radius: 20px;
+            box-shadow: 0 0 0 3px #ff85c1, 0 10px 0 #ffb3d9, 0 15px 30px rgba(255, 105, 180, 0.3);
+            margin-bottom: 30px;
+            padding: 30px;
+            overflow: hidden;
+        }
+
+        .game-scene::before {
+            content: '🌸 🌸 🌸 🌸 🌸';
+            position: absolute;
+            bottom: 65%;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 16px;
+            opacity: 0.3;
+        }
+
+        /* Grass Platform */
+        .grass-platform {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60%;
+            background: linear-gradient(to bottom, #ffe9c5 0%, #ffd89d 20%, #ffe9c5 20%);
+            border-top: 6px solid #fff;
+            box-shadow: inset 0 6px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        .grass-platform::after {
+            content: '🌷';
+            position: absolute;
+            left: 15%;
+            top: -30px;
+            font-size: 30px;
+            animation: flowerSway 3s ease-in-out infinite;
+        }
+
+        @keyframes flowerSway {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        .grass-decoration {
+            position: absolute;
+            top: -15px;
+            left: 0;
+            right: 0;
+            height: 25px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                transparent 15px,
+                rgba(255, 192, 203, 0.3) 15px,
+                rgba(255, 192, 203, 0.3) 18px
+            );
+            border-top: 3px dotted rgba(255, 182, 193, 0.4);
+        }
+
+        /* Character */
+        .character {
+            position: absolute;
+            bottom: 60%;
+            left: 10%;
+            width: 64px;
+            height: 64px;
+            font-size: 48px;
+            animation: characterIdle 2s ease-in-out infinite;
+            z-index: 20;
+            filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.3));
+        }
+
+        @keyframes characterIdle {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Story Box */
+        .story-box {
+            background: #fff;
+            border: 6px solid #ff85c1;
+            border-radius: 25px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 700px;
+            position: relative;
+            z-index: 15;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 6px #ffb3d9, 0 10px 20px rgba(255, 105, 180, 0.3), inset 0 3px 10px rgba(255, 240, 245, 0.8);
+        }
+
+        .story-box::before {
+            content: '💕';
+            position: absolute;
+            top: -20px;
+            left: 30px;
+            font-size: 35px;
+            filter: drop-shadow(2px 2px 5px rgba(255, 105, 180, 0.3));
+        }
+
+        .story-box::after {
+            content: '';
+            position: absolute;
+            bottom: -18px;
+            left: 60px;
+            width: 30px;
+            height: 30px;
+            background: #fff;
+            border: 6px solid #ff85c1;
+            border-top: none;
+            border-left: none;
+            border-radius: 0 0 20px 0;
+            transform: rotate(15deg);
+        }
+
+        .level-title {
+            font-size: 16px;
+            color: #ff1493;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0 rgba(255, 192, 229, 0.5);
+            text-align: center;
+        }
+
+        .level-number-badge {
+            display: inline-block;
+            background: linear-gradient(to bottom, #ffd700 0%, #ffb700 100%);
+            color: #fff;
+            padding: 6px 14px;
+            border: 3px solid #fff;
+            border-radius: 20px;
+            font-size: 10px;
+            margin-left: 10px;
+            box-shadow: 0 3px 0 #ff8c00, 0 5px 10px rgba(255, 140, 0, 0.3);
+            text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .story-content {
+            font-size: 10px;
+            line-height: 1.8;
+            color: #ff1493;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .choices {
+            display: grid;
+            gap: 12px;
+        }
+
+        .choice-btn {
+            background: linear-gradient(to bottom, #fff 0%, #ffe4f0 100%);
+            border: 5px solid #ff69b4;
+            border-radius: 20px;
+            padding: 18px 25px;
+            color: #ff1493;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 9px;
+            cursor: pointer;
+            transition: all 0.15s;
+            text-align: left;
+            box-shadow: 0 5px 0 #ff85c1, 0 8px 15px rgba(255, 105, 180, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            position: relative;
+            font-weight: bold;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #ff85c1, 0 12px 20px rgba(255, 105, 180, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            background: linear-gradient(to bottom, #fff 0%, #ffd4e8 100%);
+        }
+
+        .choice-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #ff85c1, 0 4px 10px rgba(255, 105, 180, 0.3);
+        }
+
+        .choice-btn::before {
+            content: '💖';
+            margin-right: 12px;
+            font-size: 14px;
+        }
+
+        /* Boss Stage */
+        .boss-scene {
+            background: linear-gradient(to bottom, #ff85c1 0%, #ffb3d9 50%, #ffd4e8 100%);
+            position: relative;
+            animation: bossShake 0.3s infinite;
+        }
+
+        @keyframes bossShake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
+
+        .boss-warning {
+            background: linear-gradient(to right, #ffd700 0%, #ffed4e 50%, #ffd700 100%);
+            color: #ff1493;
+            text-align: center;
+            padding: 18px;
+            font-size: 14px;
+            border: 5px solid #fff;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            animation: warningPulse 0.8s infinite;
+            box-shadow: 0 0 0 3px #ff8c00, 0 5px 15px rgba(255, 215, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.9; }
+        }
+
+        .boss-character {
+            position: absolute;
+            top: 30%;
+            right: 15%;
+            font-size: 80px;
+            animation: bossFloat 3s ease-in-out infinite;
+            filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.5));
+        }
+
+        @keyframes bossFloat {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        /* Inventory */
+        .inventory {
+            background: #fff;
+            border: 6px solid #ff85c1;
+            border-radius: 25px;
+            padding: 30px;
+            margin: 30px 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 6px #ffb3d9, 0 10px 20px rgba(255, 105, 180, 0.3), inset 0 3px 10px rgba(255, 240, 245, 0.8);
+        }
+
+        .inventory-title {
+            font-size: 14px;
+            color: #ff1493;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 0 rgba(255, 192, 229, 0.5);
+        }
+
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+            gap: 12px;
+        }
+
+        .item-slot {
+            background: linear-gradient(to bottom, #ffe4f0 0%, #ffd4e8 100%);
+            border: 4px solid #ff69b4;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.2s;
+            animation: itemPop 0.4s ease-out backwards;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 0 #ff85c1, inset 0 2px 5px rgba(255, 255, 255, 0.6);
+        }
+
+        .item-slot:hover {
+            transform: translateY(-5px) scale(1.05);
+            border-color: #ffd700;
+            background: linear-gradient(to bottom, #fff 0%, #ffe9c5 100%);
+            box-shadow: 0 8px 0 #ffb700, 0 10px 25px rgba(255, 215, 0, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes itemPop {
+            0% {
+                transform: scale(0) rotate(180deg);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.15) rotate(-10deg);
+            }
+            100% {
+                transform: scale(1) rotate(0);
+                opacity: 1;
+            }
+        }
+
+        .item-icon {
+            font-size: 36px;
+            margin-bottom: 10px;
+            filter: drop-shadow(2px 2px 3px rgba(255, 105, 180, 0.3));
+        }
+
+        .item-name {
+            font-size: 7px;
+            color: #ff1493;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        /* Achievements */
+        .achievements {
+            background: #fff;
+            border: 6px solid #ff85c1;
+            border-radius: 25px;
+            padding: 30px;
+            margin: 30px 20px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: 0 0 0 3px #fff, 0 0 0 6px #ffb3d9, 0 10px 20px rgba(255, 105, 180, 0.3), inset 0 3px 10px rgba(255, 240, 245, 0.8);
+        }
+
+        .achievements-title {
+            font-size: 14px;
+            color: #ff1493;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 2px 2px 0 rgba(255, 192, 229, 0.5);
+        }
+
+        .achievement {
+            background: linear-gradient(to right, #ffe4f0 0%, #ffd4e8 100%);
+            border: 4px solid #ffb3d9;
+            border-radius: 15px;
+            padding: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: all 0.3s;
+            opacity: 0.4;
+            filter: grayscale(100%);
+            box-shadow: 0 3px 0 #ffc9ed, inset 0 2px 5px rgba(255, 255, 255, 0.6);
+        }
+
+        .achievement.unlocked {
+            border-color: #ffd700;
+            background: linear-gradient(to right, #fff 0%, #ffe9c5 100%);
+            opacity: 1;
+            filter: grayscale(0%);
+            animation: achievementUnlock 0.6s ease-out;
+            box-shadow: 0 5px 0 #ffb700, 0 8px 20px rgba(255, 215, 0, 0.4), inset 0 2px 5px rgba(255, 255, 255, 0.8);
+        }
+
+        @keyframes achievementUnlock {
+            0% { 
+                transform: scale(0.8) translateX(-50px) rotate(-5deg); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: scale(1.1) translateX(0) rotate(2deg); 
+            }
+            100% { 
+                transform: scale(1) rotate(0); 
+                opacity: 1; 
+            }
+        }
+
+        .achievement-icon {
+            font-size: 32px;
+            min-width: 45px;
+            text-align: center;
+            filter: drop-shadow(2px 2px 3px rgba(255, 105, 180, 0.3));
+        }
+
+        .achievement-info {
+            flex: 1;
+        }
+
+        .achievement-name {
+            font-size: 9px;
+            color: #ff1493;
+            margin-bottom: 6px;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        .achievement-desc {
+            font-size: 7px;
+            color: #ff69b4;
+        }
+
+        .achievement.unlocked .achievement-desc {
+            color: #ff8c00;
+        }
+
+        /* Music Controls */
+        .music-controls {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            z-index: 1000;
+        }
+
+        .music-btn {
+            background: linear-gradient(to bottom, #fff 0%, #ffe4f0 100%);
+            border: 5px solid #ff69b4;
+            border-radius: 25px;
+            color: #ff1493;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 10px;
+            padding: 15px 22px;
+            cursor: pointer;
+            transition: all 0.15s;
+            box-shadow: 0 5px 0 #ff85c1, 0 8px 15px rgba(255, 105, 180, 0.3), inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            font-weight: bold;
+        }
+
+        .music-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #ff85c1, 0 12px 20px rgba(255, 105, 180, 0.4);
+        }
+
+        .music-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #ff85c1;
+        }
+
+        /* Final Message */
+        .final-message {
+            background: linear-gradient(135deg, #fff 0%, #ffe4f0 30%, #ffe9c5 70%, #fff5e1 100%);
+            border: 8px solid #ff69b4;
+            border-radius: 30px;
+            padding: 60px 40px;
+            text-align: center;
+            max-width: 800px;
+            margin: 100px auto;
+            box-shadow: 0 0 0 4px #fff, 0 0 0 8px #ffb3d9, 0 0 0 12px #ffd700, 0 15px 30px rgba(255, 105, 180, 0.4), inset 0 4px 15px rgba(255, 255, 255, 0.8);
+            animation: finalReveal 1.5s ease-out;
+            position: relative;
+        }
+
+        @keyframes finalReveal {
+            0% { 
+                transform: scale(0) rotate(180deg);
+                opacity: 0;
+            }
+            60% {
+                transform: scale(1.08) rotate(-3deg);
+            }
+            80% {
+                transform: scale(0.95) rotate(2deg);
+            }
+            100% { 
+                transform: scale(1) rotate(0);
+                opacity: 1;
+            }
+        }
+
+        .final-message::before {
+            content: '👑';
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 80px;
+            animation: crownBounce 2s ease-in-out infinite;
+            filter: drop-shadow(0 5px 15px rgba(255, 215, 0, 0.6));
+        }
+
+        @keyframes crownBounce {
+            0%, 100% { transform: translateX(-50%) translateY(0) rotate(-5deg); }
+            50% { transform: translateX(-50%) translateY(-15px) rotate(5deg); }
+        }
+
+        .final-message::after {
+            content: '✨💕✨';
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 25px;
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .final-title {
+            font-size: 26px;
+            margin-bottom: 35px;
+            background: linear-gradient(135deg, #ff1493 0%, #ff69b4 50%, #ffd700 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            filter: drop-shadow(3px 3px 5px rgba(255, 105, 180, 0.3));
+        }
+
+        .final-text {
+            font-size: 11px;
+            line-height: 2.3;
+            color: #ff1493;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+        }
+
+        /* Pixelated Decorations */
+        .pixel-decoration {
+            position: fixed;
+            pointer-events: none;
+            font-size: 40px;
+            z-index: 5;
+            animation: float 6s infinite ease-in-out;
+            filter: drop-shadow(3px 3px 0 rgba(255, 105, 180, 0.4));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hud-top {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+            
+            .level-title { font-size: 12px; }
+            .story-content { font-size: 9px; }
+            .choice-btn { font-size: 8px; padding: 12px 15px; }
+            .final-title { font-size: 18px; }
+            .final-text { font-size: 9px; }
+            
+            .character { font-size: 36px; width: 48px; height: 48px; }
+            .boss-character { font-size: 60px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- HUD -->
+    <div class="hud-top">
+        <div class="hud-left">
+            <div class="hearts">
+                <span class="heart">❤️</span>
+                <span class="heart" style="animation-delay: 0.2s">❤️</span>
+                <span class="heart" style="animation-delay: 0.4s">❤️</span>
+            </div>
+            <div class="coins">
+                <span class="coin-icon">🪙</span>
+                <span class="coin-count" id="coinCount">0</span>
+            </div>
+        </div>
+        <div class="hud-right">
+            <div class="level-display">
+                LV.<span id="playerLevel">1</span>
+            </div>
+            <div class="achievement-display">
+                🏆 <span id="achievementCount">0/8</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sky Background -->
+    <div class="sky-background">
+        <div class="cloud" style="top: 10%; left: 20%; width: 80px; height: 40px; animation-delay: 0s;"></div>
+        <div class="cloud" style="top: 25%; left: 60%; width: 100px; height: 50px; animation-delay: 5s;"></div>
+        <div class="cloud" style="top: 40%; left: 10%; width: 90px; height: 45px; animation-delay: 10s;"></div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container">
+        <div class="game-world">
+            <!-- Game Content Area -->
+            <div id="gameContent">
+                <!-- Levels will be dynamically inserted here -->
+            </div>
+
+            <!-- Inventory -->
+            <div class="inventory">
+                <div class="inventory-title">📦 획득한 아이템 📦</div>
+                <div class="inventory-grid" id="inventoryGrid">
+                    <!-- Items will be added here -->
+                </div>
+            </div>
+
+            <!-- Achievements -->
+            <div class="achievements">
+                <div class="achievements-title">🏆 도전과제 🏆</div>
+                <div id="achievementsList">
+                    <!-- Achievements will be added here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Music Controls -->
+    <div class="music-controls">
+        <button class="music-btn" id="musicToggle">🎵 음악 ON</button>
+    </div>
+
+    <!-- Pixel Decorations -->
+    <div class="pixel-decoration" style="top: 15%; left: 5%;">👑</div>
+    <div class="pixel-decoration" style="top: 25%; right: 8%; animation-delay: 1s;">💎</div>
+    <div class="pixel-decoration" style="top: 70%; left: 10%; animation-delay: 2s;">🌸</div>
+    <div class="pixel-decoration" style="top: 60%; right: 12%; animation-delay: 1.5s;">🎂</div>
+    <div class="pixel-decoration" style="top: 40%; left: 15%; animation-delay: 0.5s;">✨</div>
+    <div class="pixel-decoration" style="top: 80%; right: 15%; animation-delay: 2.5s;">💖</div>
+
+    <script>
+        // Game State
+        const gameState = {
+            currentLevel: 1,
+            exp: 0,
+            maxExp: 100,
+            unlockedAchievements: [],
+            inventory: [],
+            musicPlaying: false
+        };
+
+        // Game Data
+        const levels = [
+            {
+                level: 1,
+                title: "유년기 - 모험의 시작",
+                story: "1998년 02월 21일, 민중 병원에서 한 아이가 태어났습니다. 주변 사람들의 사랑을 받으며 성장하던 중, 중학생이 되어 소중한 인연이 찾아옵니다.",
+                choices: [
+                    { text: "304의 일원이 된다", next: 2, item: "🎒 304 가방" },
+                    { text: "301의 일원이 된다", next: 2, item: "📚 301 교과서" }
+                ]
+            },
+            {
+                level: 10,
+                title: "첫 만남 - 운명적 조우",
+                story: "중학교 친하지 않았던 우리, 영경이가 말을 거는 그 순간. 인생의 중요한 동료를 만나게 됩니다. 함께 성장하며 소중한 추억을 쌓아갑니다.",
+                choices: [
+                    { text: "매일 같이 떠들며 우정을 쌓는다", next: 3, item: "💕 우정의 증표" },
+                    { text: "쟤 뭐야 하면서 혼자 공부나 한다", next: 3, item: "📖 외로운 공부" }
+                ]
+            },
+            {
+                level: 15,
+                title: "Boss Stage - 인생의 고비 1 (고3생활)",
+                boss: true,
+                story: "한대부고에서의 고통스러운 일상에서 벗어나 자양고에 전학간 혜린. 이제 정말 빡센 공부가 필요하다. 문과 이과는 다르지만 광희독서실에 모여 어려움을 극복해가기로 한다.",
+                choices: [
+                    { text: "서로 격려하며 함께 이겨낸다", next: 4, item: "📝 광희독서실 출석카드" },
+                    { text: "정영경이 방해되니까 혼자 공부한다", next: 4, item: "😤 짜증나는 마음" }
+                ]
+            },
+            {
+                level: 20,
+                title: "행복한 대학시절 - 모태솔로는 언제 탈출?",
+                story: "대학만 합격하면 될 줄 알았는데, 이제는 연애도 해야한다니. 혜린과 영경은 모태솔로에서 탈출하기 위해 온갖 노력을 하기 시작한다. 그런데, 영경이가 먼저 모솔 탈출해버린다.",
+                choices: [
+                    { text: "짜증나지만, 일단 응원한다", next: 5, item: "💝 억지 축하 선물" },
+                    { text: "모태솔로 탈출죄로 절교한다", next: 5, item: "💔 절교장" }
+                ]
+            },
+            {
+                level: 25,
+                title: "Boss Stage - 인생의 고비 2 (취업준비생)",
+                boss: true,
+                story: "이제 졸업하니, 취업의 고비가 있다. 각기 다른 삶을 가지고 있는 우리지만, 간간히 카페도 가고 술도 먹고 취업에 대한 스트레스를 서로 나누고 있다.",
+                choices: [
+                    { text: "함께 하니 힘이 되었다", next: 6, item: "☕ 카페 기억" },
+                    { text: "서로 직업이 달라서 도움이 안되었다", next: 6, item: "🤷 각자의 길" }
+                ]
+            },
+            {
+                level: 30,
+                title: "현재 - 레벨 30 달성!",
+                story: "세월이 흘러 어느덧 30세(만 28세)가 되었다. 이젠 우리 남자친구도 있고 취업도 했다. 앞으로 있을 모험은.. 결혼, 커리어, 출산,, 등등 뭐일까?",
+                choices: [
+                    { text: "30살을 축하합니다! 최종 메시지 확인하기", next: 'final', item: "🎂 생일 케이크" }
+                ]
+            }
+        ];
+
+        const achievements = [
+            { id: 1, icon: "🎂", name: "생일 축하!", desc: "게임 시작", unlocked: false },
+            { id: 2, icon: "🎒", name: "304 입성", desc: "레벨 1 클리어", unlocked: false },
+            { id: 3, icon: "💕", name: "영경이와 친구", desc: "레벨 10 클리어", unlocked: false },
+            { id: 4, icon: "📚", name: "광희독서실 극복", desc: "고3 보스 클리어", unlocked: false },
+            { id: 5, icon: "🎓", name: "대학생", desc: "레벨 20 클리어", unlocked: false },
+            { id: 6, icon: "💼", name: "취업 성공", desc: "취업 보스 클리어", unlocked: false },
+            { id: 7, icon: "🎵", name: "음악 감상가", desc: "배경음악 켜기", unlocked: false },
+            { id: 8, icon: "👑", name: "30세 달성!", desc: "게임 완료", unlocked: false }
+        ];
+
+        // Initialize Game
+        function initGame() {
+            renderLevel(0);
+            renderInventory();
+            renderAchievements();
+            unlockAchievement(1);
+            updateStats();
+        }
+
+        // Render Level
+        function renderLevel(levelIndex) {
+            const level = levels[levelIndex];
+            const gameContent = document.getElementById('gameContent');
+            
+            const isBoss = level.boss;
+            // Characters: baby -> student -> high school -> college -> adult -> birthday
+            const character = isBoss ? '📚' : ['👶', '🎒', '📚', '🎓', '💼', '🎂'][levelIndex] || '👸';
+            const enemy = isBoss ? '📖' : '';
+            
+            const levelHTML = `
+                <div class="level-stage">
+                    ${isBoss ? '<div class="boss-warning">⚠️ BOSS BATTLE ⚠️</div>' : ''}
+                    <div class="game-scene ${isBoss ? 'boss-scene' : ''}">
+                        <div class="grass-platform">
+                            <div class="grass-decoration"></div>
+                        </div>
+                        <div class="character">${character}</div>
+                        ${isBoss ? `<div class="boss-character">${enemy}</div>` : ''}
+                    </div>
+                    <div class="story-box">
+                        <div class="level-title">
+                            ${level.title}
+                            <span class="level-number-badge">LV. ${level.level}</span>
+                        </div>
+                        <div class="story-content">${level.story}</div>
+                        <div class="choices">
+                            ${level.choices.map((choice, idx) => `
+                                <button class="choice-btn" onclick="makeChoice(${levelIndex}, ${idx})">
+                                    ${choice.text}
+                                </button>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            gameContent.innerHTML = levelHTML;
+            
+            // Update level in state
+            gameState.currentLevel = level.level;
+            updateStats();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Make Choice
+        function makeChoice(levelIndex, choiceIndex) {
+            const level = levels[levelIndex];
+            const choice = level.choices[choiceIndex];
+            
+            // Add item to inventory
+            if (choice.item && !gameState.inventory.includes(choice.item)) {
+                gameState.inventory.push(choice.item);
+                renderInventory();
+            }
+            
+            // Gain coins
+            const coinsEarned = level.boss ? 50 : 25;
+            gameState.exp += coinsEarned;
+            document.getElementById('coinCount').textContent = gameState.exp;
+            
+            // Unlock achievements based on level
+            if (levelIndex === 0) unlockAchievement(2); // 304 입성
+            if (levelIndex === 1) unlockAchievement(3); // 영경이와 친구
+            if (levelIndex === 2) unlockAchievement(4); // 광희독서실 극복
+            if (levelIndex === 3) unlockAchievement(5); // 대학생
+            if (levelIndex === 4) unlockAchievement(6); // 취업 성공
+            if (level.level === 30) unlockAchievement(8); // 30세 달성
+            
+            // Next level or final
+            if (choice.next === 'final') {
+                showFinalMessage();
+            } else {
+                setTimeout(() => {
+                    renderLevel(choice.next - 1);
+                }, 300);
+            }
+        }
+
+        // Update Stats
+        function updateStats() {
+            document.getElementById('playerLevel').textContent = gameState.currentLevel;
+            document.getElementById('coinCount').textContent = gameState.exp;
+            document.getElementById('achievementCount').textContent = 
+                `${gameState.unlockedAchievements.length}/${achievements.length}`;
+        }
+
+        // Render Inventory
+        function renderInventory() {
+            const inventoryGrid = document.getElementById('inventoryGrid');
+            
+            if (gameState.inventory.length === 0) {
+                inventoryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; font-size: 9px; color: #aaa;">아직 획득한 아이템이 없습니다</div>';
+                return;
+            }
+            
+            inventoryGrid.innerHTML = gameState.inventory.map((item, idx) => {
+                const [icon, name] = item.split(' ');
+                return `
+                    <div class="item-slot" style="animation-delay: ${idx * 0.1}s">
+                        <div class="item-icon">${icon}</div>
+                        <div class="item-name">${name}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Render Achievements
+        function renderAchievements() {
+            const achievementsList = document.getElementById('achievementsList');
+            
+            achievementsList.innerHTML = achievements.map(ach => `
+                <div class="achievement ${gameState.unlockedAchievements.includes(ach.id) ? 'unlocked' : ''}" id="achievement-${ach.id}">
+                    <div class="achievement-icon">${ach.icon}</div>
+                    <div class="achievement-info">
+                        <div class="achievement-name">${ach.name}</div>
+                        <div class="achievement-desc">${ach.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Unlock Achievement
+        function unlockAchievement(id) {
+            if (!gameState.unlockedAchievements.includes(id)) {
+                gameState.unlockedAchievements.push(id);
+                const element = document.getElementById(`achievement-${id}`);
+                if (element) {
+                    element.classList.add('unlocked');
+                }
+                updateStats();
+            }
+        }
+
+        // Show Final Message
+        function showFinalMessage() {
+            const gameContent = document.getElementById('gameContent');
+            gameContent.innerHTML = `
+                <div class="final-message">
+                    <div class="final-title">🎉 30세 축하해! 🎉</div>
+                    <div class="final-text">
+                        1998년 2월 21일부터 시작된<br>
+                        혜린이의 인생 게임!<br><br>
+                        
+                        중학교 304호에서 만나<br>
+                        고3 광희독서실에서 함께 고생하고<br>
+                        대학에서 모솔 탈출하고<br>
+                        취업 준비하면서 의지했던<br>
+                        우리의 시간들...<br><br>
+                        
+                        이제 30세가 되었지만<br>
+                        앞으로도 계속될 우리의 모험!<br><br>
+                        
+                        결혼도 하고, 커리어도 쌓고,<br>
+                        아이도 낳고(?)...<br>
+                        계속 함께 하자💕<br><br>
+                        
+                        🎂 생일 진심으로 축하해! 🎂<br><br>
+                        
+                        <span style="font-size: 8px;">- 너의 절친 영경이가</span>
+                    </div>
+                </div>
+            `;
+            unlockAchievement(8);
+        }
+
+        // Music Toggle (Simulated - would need actual audio file)
+        let musicToggle = document.getElementById('musicToggle');
+        musicToggle.addEventListener('click', function() {
+            gameState.musicPlaying = !gameState.musicPlaying;
+            this.textContent = gameState.musicPlaying ? '🎵 음악 OFF' : '🎵 음악 ON';
+            
+            if (gameState.musicPlaying) {
+                unlockAchievement(7);
+                // Here you would play actual retro game music
+                // For now, we'll just show the achievement
+            }
+        });
+
+        // Start the game!
+        initGame();
+    </script>
+</body>
+</html>
