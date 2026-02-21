@@ -35,42 +35,52 @@
             top: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(to bottom, #ff85c1 0%, #ff69b4 100%);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
+            background: #ff69b4;
+            padding: 10px 15px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
             align-items: center;
-            border-bottom: 6px solid #fff;
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
+            border-bottom: 3px solid #ff1493;
             z-index: 1000;
-            box-shadow: 0 4px 0 #ff1493, 0 8px 20px rgba(255, 105, 180, 0.4);
+            box-shadow: 0 3px 0 rgba(255, 20, 147, 0.3), inset 0 -2px 0 rgba(0, 0, 0, 0.1), inset 0 2px 0 rgba(255, 255, 255, 0.3);
         }
 
-        .hud-top::before {
-            content: '💕';
+        .hud-top::after {
+            content: '';
             position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 30px;
-            opacity: 0.2;
+            bottom: -3px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: repeating-linear-gradient(
+                90deg,
+                #ff1493 0px,
+                #ff1493 8px,
+                #fff 8px,
+                #fff 10px
+            );
         }
 
         .hud-left {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
         }
 
         .hearts {
             display: flex;
-            gap: 5px;
+            gap: 3px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 4px 8px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
         }
 
         .heart {
-            font-size: 20px;
+            font-size: 16px;
             animation: heartBeat 1.5s infinite;
+            filter: drop-shadow(1px 1px 0 rgba(255, 20, 147, 0.5));
         }
 
         @keyframes heartBeat {
@@ -82,54 +92,80 @@
         .coins {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             background: #fff;
-            padding: 10px 18px;
+            padding: 6px 12px;
             border: 3px solid #ffd700;
-            border-radius: 30px;
-            box-shadow: 0 4px 0 #ffb700, inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 2px 0 #ff8c00, inset 0 1px 0 rgba(255, 255, 255, 0.8);
         }
 
         .coin-icon {
-            font-size: 20px;
-            animation: spin 3s linear infinite;
+            font-size: 16px;
+            animation: coinSpin 2s linear infinite;
+            filter: drop-shadow(1px 1px 0 rgba(255, 140, 0, 0.5));
         }
 
-        @keyframes spin {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(360deg); }
+        @keyframes coinSpin {
+            0%, 100% { transform: rotateY(0deg) scale(1); }
+            25% { transform: rotateY(90deg) scale(0.8); }
+            50% { transform: rotateY(180deg) scale(1); }
+            75% { transform: rotateY(270deg) scale(0.8); }
         }
 
         .coin-count {
-            font-size: 12px;
+            font-size: 14px;
             color: #ff8c00;
-            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.5);
+            font-weight: bold;
+            text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .hud-center {
+            text-align: center;
+        }
+
+        .game-title-small {
+            font-size: 10px;
+            color: #fff;
+            text-shadow: 2px 2px 0 rgba(255, 20, 147, 0.5);
+            letter-spacing: 1px;
         }
 
         .hud-right {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             align-items: center;
+            justify-content: flex-end;
         }
 
         .level-display {
             background: #fff;
-            padding: 10px 18px;
+            padding: 6px 12px;
             border: 3px solid #ff69b4;
-            border-radius: 30px;
-            font-size: 11px;
+            border-radius: 8px;
+            font-size: 12px;
             color: #ff1493;
-            box-shadow: 0 4px 0 #ff85c1, inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            box-shadow: 0 2px 0 #ff85c1, inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .level-display::before {
+            content: '⭐ ';
         }
 
         .achievement-display {
             background: #fff;
-            padding: 10px 18px;
-            border: 3px solid #ff69b4;
-            border-radius: 30px;
-            font-size: 11px;
-            color: #ff1493;
-            box-shadow: 0 4px 0 #ff85c1, inset 0 2px 5px rgba(255, 255, 255, 0.8);
+            padding: 6px 12px;
+            border: 3px solid #ffd700;
+            border-radius: 8px;
+            font-size: 12px;
+            color: #ff8c00;
+            box-shadow: 0 2px 0 #ffb700, inset 0 1px 0 rgba(255, 255, 255, 0.8);
+            font-weight: bold;
+            white-space: nowrap;
         }
 
         /* Game World */
@@ -158,7 +194,7 @@
             left: 0;
             right: 0;
             text-align: center;
-            font-size: 20px;
+            font-size: 14px;
             opacity: 0.15;
             animation: heartFloat 15s linear infinite;
         }
@@ -192,14 +228,15 @@
         }
 
         .game-scene {
-            background: linear-gradient(to bottom, transparent 0%, transparent 40%, #ffe9c5 40%, #ffd89d 50%, #ffcc80 100%);
-            min-height: 400px;
+            background: linear-gradient(to bottom, transparent 0%, transparent 30%, #ffe9c5 30%, #ffd89d 40%, #ffcc80 100%);
+            min-height: 250px;
+            max-height: 280px;
             position: relative;
             border: 6px solid #fff;
             border-radius: 20px;
             box-shadow: 0 0 0 3px #ff85c1, 0 10px 0 #ffb3d9, 0 15px 30px rgba(255, 105, 180, 0.3);
-            margin-bottom: 30px;
-            padding: 30px;
+            margin-bottom: 20px;
+            padding: 20px;
             overflow: hidden;
         }
 
@@ -210,7 +247,7 @@
             left: 0;
             right: 0;
             text-align: center;
-            font-size: 16px;
+            font-size: 11px;
             opacity: 0.3;
         }
 
@@ -220,7 +257,7 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 60%;
+            height: 70%;
             background: linear-gradient(to bottom, #ffe9c5 0%, #ffd89d 20%, #ffe9c5 20%);
             border-top: 6px solid #fff;
             box-shadow: inset 0 6px 0 rgba(255, 255, 255, 0.5);
@@ -230,8 +267,8 @@
             content: '🌷';
             position: absolute;
             left: 15%;
-            top: -30px;
-            font-size: 30px;
+            top: -25px;
+            font-size: 17px;
             animation: flowerSway 3s ease-in-out infinite;
         }
 
@@ -259,11 +296,11 @@
         /* Character */
         .character {
             position: absolute;
-            bottom: 60%;
+            bottom: 70%;
             left: 10%;
-            width: 64px;
-            height: 64px;
-            font-size: 48px;
+            width: 48px;
+            height: 48px;
+            font-size: 28px;
             animation: characterIdle 2s ease-in-out infinite;
             z-index: 20;
             filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.3));
@@ -271,7 +308,7 @@
 
         @keyframes characterIdle {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            50% { transform: translateY(-6px); }
         }
 
         /* Story Box */
@@ -292,7 +329,7 @@
             position: absolute;
             top: -20px;
             left: 30px;
-            font-size: 35px;
+            font-size: 24px;
             filter: drop-shadow(2px 2px 5px rgba(255, 105, 180, 0.3));
         }
 
@@ -312,7 +349,7 @@
         }
 
         .level-title {
-            font-size: 16px;
+            font-size: 22px;
             color: #ff1493;
             margin-bottom: 15px;
             text-shadow: 2px 2px 0 rgba(255, 192, 229, 0.5);
@@ -326,14 +363,14 @@
             padding: 6px 14px;
             border: 3px solid #fff;
             border-radius: 20px;
-            font-size: 10px;
+            font-size: 14px;
             margin-left: 10px;
             box-shadow: 0 3px 0 #ff8c00, 0 5px 10px rgba(255, 140, 0, 0.3);
             text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
         }
 
         .story-content {
-            font-size: 10px;
+            font-size: 14px;
             line-height: 1.8;
             color: #ff1493;
             margin-bottom: 20px;
@@ -352,7 +389,7 @@
             padding: 18px 25px;
             color: #ff1493;
             font-family: 'Press Start 2P', cursive;
-            font-size: 9px;
+            font-size: 15px;
             cursor: pointer;
             transition: all 0.15s;
             text-align: left;
@@ -375,7 +412,7 @@
         .choice-btn::before {
             content: '💖';
             margin-right: 12px;
-            font-size: 14px;
+            font-size: 10px;
         }
 
         /* Boss Stage */
@@ -396,7 +433,7 @@
             color: #ff1493;
             text-align: center;
             padding: 18px;
-            font-size: 14px;
+            font-size: 20px;
             border: 5px solid #fff;
             border-radius: 15px;
             margin-bottom: 20px;
@@ -412,16 +449,16 @@
 
         .boss-character {
             position: absolute;
-            top: 30%;
+            top: 20%;
             right: 15%;
-            font-size: 80px;
+            font-size: 42px;
             animation: bossFloat 3s ease-in-out infinite;
             filter: drop-shadow(4px 4px 0 rgba(0,0,0,0.5));
         }
 
         @keyframes bossFloat {
             0%, 100% { transform: translateY(0) rotate(-5deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
+            50% { transform: translateY(-15px) rotate(5deg); }
         }
 
         /* Inventory */
@@ -438,7 +475,7 @@
         }
 
         .inventory-title {
-            font-size: 14px;
+            font-size: 20px;
             color: #ff1493;
             margin-bottom: 20px;
             text-align: center;
@@ -489,13 +526,13 @@
         }
 
         .item-icon {
-            font-size: 36px;
+            font-size: 25px;
             margin-bottom: 10px;
             filter: drop-shadow(2px 2px 3px rgba(255, 105, 180, 0.3));
         }
 
         .item-name {
-            font-size: 7px;
+            font-size: 13px;
             color: #ff1493;
             text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
         }
@@ -514,7 +551,7 @@
         }
 
         .achievements-title {
-            font-size: 14px;
+            font-size: 20px;
             color: #ff1493;
             margin-bottom: 20px;
             text-align: center;
@@ -560,7 +597,7 @@
         }
 
         .achievement-icon {
-            font-size: 32px;
+            font-size: 22px;
             min-width: 45px;
             text-align: center;
             filter: drop-shadow(2px 2px 3px rgba(255, 105, 180, 0.3));
@@ -571,14 +608,14 @@
         }
 
         .achievement-name {
-            font-size: 9px;
+            font-size: 15px;
             color: #ff1493;
             margin-bottom: 6px;
             text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
         }
 
         .achievement-desc {
-            font-size: 7px;
+            font-size: 13px;
             color: #ff69b4;
         }
 
@@ -600,7 +637,7 @@
             border-radius: 25px;
             color: #ff1493;
             font-family: 'Press Start 2P', cursive;
-            font-size: 10px;
+            font-size: 14px;
             padding: 15px 22px;
             cursor: pointer;
             transition: all 0.15s;
@@ -655,7 +692,7 @@
             top: -60px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 80px;
+            font-size: 56px;
             animation: crownBounce 2s ease-in-out infinite;
             filter: drop-shadow(0 5px 15px rgba(255, 215, 0, 0.6));
         }
@@ -671,7 +708,7 @@
             bottom: -40px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 25px;
+            font-size: 18px;
             animation: sparkle 1.5s ease-in-out infinite;
         }
 
@@ -681,7 +718,7 @@
         }
 
         .final-title {
-            font-size: 26px;
+            font-size: 36px;
             margin-bottom: 35px;
             background: linear-gradient(135deg, #ff1493 0%, #ff69b4 50%, #ffd700 100%);
             -webkit-background-clip: text;
@@ -692,7 +729,7 @@
         }
 
         .final-text {
-            font-size: 11px;
+            font-size: 15px;
             line-height: 2.3;
             color: #ff1493;
             text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8);
@@ -702,7 +739,7 @@
         .pixel-decoration {
             position: fixed;
             pointer-events: none;
-            font-size: 40px;
+            font-size: 28px;
             z-index: 5;
             animation: float 6s infinite ease-in-out;
             filter: drop-shadow(3px 3px 0 rgba(255, 105, 180, 0.4));
@@ -720,19 +757,42 @@
         /* Responsive */
         @media (max-width: 768px) {
             .hud-top {
-                flex-direction: column;
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto;
+                gap: 8px;
+                padding: 8px 10px;
+            }
+
+            .hud-left {
+                grid-column: 1;
+                grid-row: 2;
+                justify-content: center;
                 gap: 10px;
-                padding: 10px;
+            }
+
+            .hud-center {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .hud-right {
+                grid-column: 1;
+                grid-row: 3;
+                justify-content: center;
+                gap: 8px;
             }
             
-            .level-title { font-size: 12px; }
-            .story-content { font-size: 9px; }
-            .choice-btn { font-size: 8px; padding: 12px 15px; }
-            .final-title { font-size: 18px; }
-            .final-text { font-size: 9px; }
+            .level-title { font-size: 17px; }
+            .story-content { font-size: 13px; }
+            .choice-btn { font-size: 13px; padding: 15px 20px; }
+            .final-title { font-size: 25px; }
+            .final-text { font-size: 13px; }
+            .achievement-name { font-size: 13px; }
+            .achievement-desc { font-size: 11px; }
+            .item-name { font-size: 11px; }
             
-            .character { font-size: 36px; width: 48px; height: 48px; }
-            .boss-character { font-size: 60px; }
+            .character { font-size: 25px; width: 48px; height: 48px; }
+            .boss-character { font-size: 42px; }
         }
     </style>
 </head>
@@ -749,6 +809,9 @@
                 <span class="coin-icon">🪙</span>
                 <span class="coin-count" id="coinCount">0</span>
             </div>
+        </div>
+        <div class="hud-center">
+            <div class="game-title-small">🎮 HYERIN GAME 🎮</div>
         </div>
         <div class="hud-right">
             <div class="level-display">
@@ -990,7 +1053,7 @@
             const inventoryGrid = document.getElementById('inventoryGrid');
             
             if (gameState.inventory.length === 0) {
-                inventoryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; font-size: 9px; color: #aaa;">아직 획득한 아이템이 없습니다</div>';
+                inventoryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 30px; font-size: 6px; color: #aaa;">아직 획득한 아이템이 없습니다</div>';
                 return;
             }
             
@@ -1057,7 +1120,7 @@
                         
                         🎂 생일 진심으로 축하해! 🎂<br><br>
                         
-                        <span style="font-size: 8px;">- 너의 절친 영경이가</span>
+                        <span style="font-size: 11px;">- 너의 절친 영경이가</span>
                     </div>
                 </div>
             `;
