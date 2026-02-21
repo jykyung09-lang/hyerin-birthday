@@ -70,17 +70,93 @@
 
         .hearts {
             display: flex;
-            gap: 3px;
+            gap: 8px;
             background: rgba(255, 255, 255, 0.3);
-            padding: 4px 8px;
+            padding: 6px 10px;
             border-radius: 12px;
             border: 2px solid rgba(255, 255, 255, 0.5);
         }
 
         .heart {
-            font-size: 16px;
+            width: 20px;
+            height: 20px;
+            position: relative;
             animation: heartBeat 1.5s infinite;
-            filter: drop-shadow(1px 1px 0 rgba(255, 20, 147, 0.5));
+        }
+
+        .heart::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(to right, 
+                    transparent 0%, transparent 20%,
+                    #8b1538 20%, #8b1538 40%,
+                    transparent 40%, transparent 50%,
+                    #8b1538 50%, #8b1538 70%,
+                    transparent 70%),
+                linear-gradient(to right,
+                    transparent 0%, transparent 10%,
+                    #8b1538 10%, #8b1538 30%,
+                    #c91f5a 30%, #c91f5a 40%,
+                    #ff69b4 40%, #ff69b4 50%,
+                    #c91f5a 50%, #c91f5a 60%,
+                    #8b1538 60%, #8b1538 80%,
+                    transparent 80%),
+                linear-gradient(to right,
+                    #8b1538 0%, #8b1538 10%,
+                    #c91f5a 10%, #c91f5a 20%,
+                    #ffb3d9 20%, #ffb3d9 30%,
+                    #fff 30%, #fff 40%,
+                    #ff1493 40%, #ff1493 50%,
+                    #fff 50%, #fff 60%,
+                    #ffb3d9 60%, #ffb3d9 70%,
+                    #c91f5a 70%, #c91f5a 80%,
+                    #8b1538 80%, #8b1538 90%,
+                    transparent 90%),
+                linear-gradient(to right,
+                    #8b1538 0%, #8b1538 10%,
+                    #c91f5a 10%, #c91f5a 20%,
+                    #ff69b4 20%, #ff69b4 30%,
+                    #ff1493 30%, #ff1493 70%,
+                    #ff69b4 70%, #ff69b4 80%,
+                    #8b1538 80%, #8b1538 90%,
+                    transparent 90%),
+                linear-gradient(to right,
+                    transparent 0%, transparent 10%,
+                    #8b1538 10%, #8b1538 20%,
+                    #c91f5a 20%, #c91f5a 30%,
+                    #ff69b4 30%, #ff69b4 70%,
+                    #c91f5a 70%, #c91f5a 80%,
+                    #8b1538 80%, #8b1538 90%,
+                    transparent 90%),
+                linear-gradient(to right,
+                    transparent 0%, transparent 20%,
+                    #8b1538 20%, #8b1538 30%,
+                    #c91f5a 30%, #c91f5a 70%,
+                    #8b1538 70%, #8b1538 80%,
+                    transparent 80%),
+                linear-gradient(to right,
+                    transparent 0%, transparent 30%,
+                    #8b1538 30%, #8b1538 70%,
+                    transparent 70%),
+                linear-gradient(to right,
+                    transparent 0%, transparent 40%,
+                    #8b1538 40%, #8b1538 60%,
+                    transparent 60%);
+            background-size: 100% 10%;
+            background-position: 
+                0% 0%,
+                0% 10%,
+                0% 20%,
+                0% 30%,
+                0% 40%,
+                0% 50%,
+                0% 60%,
+                0% 70%;
+            background-repeat: no-repeat;
+            image-rendering: pixelated;
         }
 
         @keyframes heartBeat {
@@ -801,9 +877,9 @@
     <div class="hud-top">
         <div class="hud-left">
             <div class="hearts">
-                <span class="heart">❤️</span>
-                <span class="heart" style="animation-delay: 0.2s">❤️</span>
-                <span class="heart" style="animation-delay: 0.4s">❤️</span>
+                <div class="heart"></div>
+                <div class="heart" style="animation-delay: 0.2s"></div>
+                <div class="heart" style="animation-delay: 0.4s"></div>
             </div>
             <div class="coins">
                 <span class="coin-icon">🪙</span>
@@ -972,13 +1048,6 @@
             const levelHTML = `
                 <div class="level-stage">
                     ${isBoss ? '<div class="boss-warning">⚠️ BOSS BATTLE ⚠️</div>' : ''}
-                    <div class="game-scene ${isBoss ? 'boss-scene' : ''}">
-                        <div class="grass-platform">
-                            <div class="grass-decoration"></div>
-                        </div>
-                        <div class="character">${character}</div>
-                        ${isBoss ? `<div class="boss-character">${enemy}</div>` : ''}
-                    </div>
                     <div class="story-box">
                         <div class="level-title">
                             ${level.title}
